@@ -29,16 +29,25 @@ contract BuyMeACoffee {
         return allCoffees;
     }
 
-    function buyCoffee(string memory _name, string memory _message, uint256 _amount) public payable {
-        require(_amount > 0, "ETH value cannot be 0 or less than 0");
+    function buyCoffee(string memory _name, string memory _message) public payable {
+        // Must accept more than 0 ETH for a coffee.
+        require(msg.value > 0, "can't buy coffee for free!");
 
-        allCoffees.push(Coffee(msg.sender, _name, _message, block.timestamp));
+        // Add the memo to storage!
+        allCoffees.push(Coffee(
+            msg.sender,
+            _name,
+            _message,
+            block.timestamp
+        ));
 
-        (bool success, ) = owner.call{value: _amount}("");
-
-        require(success, "Transaction failed");
-
-        emit NewCoffee(msg.sender, _name, _message, block.timestamp);
+        // Emit a NewMemo event with details about the memo.
+        emit NewCoffee(
+            msg.sender,
+            _name,
+            _message,
+            block.timestamp
+        );
     }
 
     function withdrawEth() public {
